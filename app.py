@@ -4,8 +4,17 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 def load_prep_image(img,  img_shape =224):
+    '''
+    Loads the image, resizes it to 224x224 pixels, and scales the values to a range of [0,1]
+    
+    :param img: The image to be loaded
+    :param img_shape: The shape of the image, defaults to 224 (optional)
+    :return: None
+    '''
     #img = tf.io.read_file(filename)
     img = tf.io.encode_jpeg(img)
     img = tf.image.decode_image(img, channels = 3)
@@ -15,14 +24,19 @@ def load_prep_image(img,  img_shape =224):
     return img
 
 def pred_and_plot(model, img, class_names):
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-
-    img_tf = tf.expand_dims(img, axis = 0)
+    '''
+    Predict and Plot the given Image
+    
+    :param model: The model to use for prediction
+    :param img: The image to be classified
+    :param class_names: A list of strings, each string is a class name
+    :return: None
+    '''
+    #img_tf = tf.expand_dims(img, axis = 0)
     #pred = model.predict(img_tf)
     #pred_class = class_names[int(tf.round(pred)[0][0])]
-    pred_prob = model.predict(tf.expand_dims(img, axis=0)) # model accepts tensors of shape [None, 224, 224, 3]
-    pred_class = class_names[pred_prob.argmax()] # find the predicted class 
-
+    pred_prob = model.predict(tf.expand_dims(img, axis=0)) 
+    pred_class = class_names[pred_prob.argmax()] 
     st.write(pred_prob)
     st.write(pred_class)
     plt.imshow(img)
@@ -31,10 +45,22 @@ def pred_and_plot(model, img, class_names):
 
 
 def load_model_h5(filename):
+    '''
+    Loads a saved model from a file.
+    
+    :param filename: The name of the file to load the model from
+    :return: The model object.
+    '''
     model = tf.keras.models.load_model(filename)
     return model
 
 def class_names_list(filename):
+    '''
+    Reads the class names from a file and returns a list of class names.
+    
+    :param filename: The path to the file containing the class names
+    :return: A list of class names.
+    '''
     file = open(filename, 'r').read()
     class_names = file.split("\n")
     return class_names
